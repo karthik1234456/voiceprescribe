@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>VoicePrescribe</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wght@400;600&family=Source+Serif+4:wght@600;700&display=swap">
+<style>
+:root{--bg:#EEF5F5;--surface:#FFFFFF;--ink:#0D2B33;--muted:#4D6A72;--line:#CFE0E2;--sea:#0F6B73;--seaink:#FFFFFF;--sun:#E8A020;--moon:#4B4FA3;--warn:#FFF1B8;--warnink:#5A4500;--bad:#B3261E;--badbg:#FDE7E5;--ok:#1E7A4B;--okbg:#DDF3E7;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0A1A1F;--surface:#112830;--ink:#E6F2F3;--muted:#9DB8BD;--line:#244650;--sea:#4FC1C9;--seaink:#06222A;--sun:#F2B544;--moon:#9EA2F0;--warn:#4A3D0A;--warnink:#FFE58A;--bad:#FF8A80;--badbg:#3D1714;--ok:#6FD6A0;--okbg:#10372A}}
+:root[data-theme="dark"]{--bg:#0A1A1F;--surface:#112830;--ink:#E6F2F3;--muted:#9DB8BD;--line:#244650;--sea:#4FC1C9;--seaink:#06222A;--sun:#F2B544;--moon:#9EA2F0;--warn:#4A3D0A;--warnink:#FFE58A;--bad:#FF8A80;--badbg:#3D1714;--ok:#6FD6A0;--okbg:#10372A}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Noto Sans Kannada",system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:16px 16px 48px}
+h1,h2{font-family:"Source Serif 4",Cambria,Georgia,serif;margin:0}
+h1{font-size:28px;line-height:1.15}
+h2{font-size:21px;margin-bottom:6px}
+.tag{color:var(--muted);margin:4px 0 14px}
+nav{display:flex;gap:6px;margin-bottom:14px}
+nav button{flex:1;padding:10px 4px;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:10px;font:inherit;font-size:13px;cursor:pointer}
+nav button[aria-current="step"]{background:var(--sea);color:var(--seaink);border-color:var(--sea);font-weight:600}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 14px}
+.chip{padding:10px 14px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);font:inherit;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--sea);color:var(--seaink);border-color:var(--sea)}
+.btn{display:inline-block;padding:12px 18px;border:0;border-radius:10px;background:var(--sea);color:var(--seaink);font:inherit;font-weight:600;cursor:pointer}
+.btn.alt{background:transparent;color:var(--sea);border:1px solid var(--sea)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+label{font-weight:600;display:block;margin-top:6px}
+select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+textarea{min-height:130px;resize:vertical}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pill{display:inline-block;padding:4px 12px;border-radius:999px;font-weight:600;font-size:14px}
+.urgent{background:var(--badbg);color:var(--bad)}.normal{background:var(--warn);color:var(--warnink)}.self{background:var(--okbg);color:var(--ok)}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.mode{padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.mode[aria-pressed="true"]{border:2px solid var(--sea);background:var(--bg)}
+.mode small{display:block;color:var(--muted)}
+.stage{border-radius:12px;background:var(--bg);border:1px dashed var(--line);padding:18px;text-align:center;margin:10px 0}
+.stage b{font-size:20px;display:block}
+.meter{height:8px;border-radius:8px;background:var(--line);overflow:hidden;margin-top:10px}
+.meter i{display:block;height:100%;background:var(--sea);transition:width .3s}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.low{background:var(--warn);color:var(--warnink);border-radius:6px;padding:0 4px}
+.note{padding:10px 12px;border-radius:10px;margin:8px 0;font-size:15px}
+.note.w{background:var(--warn);color:var(--warnink)}.note.b{background:var(--badbg);color:var(--bad)}.note.g{background:var(--okbg);color:var(--ok)}
+.med{border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0;background:var(--surface)}
+.med .name{font-size:24px;font-weight:700;font-family:"Source Serif 4",Georgia,serif}
+.icons{font-size:30px;margin:6px 0}
+.kn{font-size:18px}
+.sms{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;background:var(--bg);padding:10px;border-radius:10px;white-space:pre-wrap;word-break:break-word}
+.muted{color:var(--muted);font-size:14px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>VoicePrescribe</h1>
+<p class="tag">Remote consultation for weak internet. The doctor talks, the patient gets a clear Kannada prescription.</p>
+<nav id="nav"></nav>
+
+<section id="s1" class="card">
+ <h2>Tell us the problem · ಸಮಸ್ಯೆ ಹೇಳಿ</h2>
+ <p class="muted">Tap one. The app picks the right doctor and how urgent it is.</p>
+ <div class="chips" id="sym"></div>
+ <label for="days">How many days? · ಎಷ್ಟು ದಿನ?</label>
+ <select id="days"><option value="1">1 day</option><option value="2">2 days</option><option value="3">3 days</option><option value="5">5 or more days</option></select>
+ <p style="margin-top:14px"><button class="btn" id="go1">Find a doctor</button></p>
+ <div id="tri" hidden></div>
+</section>
+
+<section id="s2" class="card" hidden>
+ <h2>Consultation</h2>
+ <p class="muted">Pick a network speed to see how the call adapts. The call never ends, it only gets lighter.</p>
+ <div class="modes" id="modes"></div>
+ <div class="stage" id="stage"></div>
+ <label for="msg">Message to the doctor · ವೈದ್ಯರಿಗೆ ಸಂದೇಶ</label>
+ <textarea id="msg" style="min-height:70px" placeholder="Fever since 3 days, body pain"></textarea>
+ <p class="row"><button class="btn" id="send">Send</button><span class="muted" id="qinfo"></span></p>
+ <div id="sent"></div>
+ <p><button class="btn alt" id="go2">Doctor is ready, write prescription</button></p>
+</section>
+
+<section id="s3" class="card" hidden>
+ <h2>Doctor’s prescription draft</h2>
+ <p class="muted">Talk as usual. Only medicine, dose and timing are kept. Audio and conversation are deleted after extraction.</p>
+ <textarea id="tx" placeholder="Speak with the mic or type. Example: Take paracetamol 500 mg morning and night after food for 5 days."></textarea>
+ <p class="row"><button class="btn" id="mic">Start recording</button><button class="btn alt" id="sample">Use sample</button><button class="btn alt" id="ext">Extract medicines</button></p>
+ <p class="muted" id="micinfo"></p>
+ <div id="draft" hidden></div>
+</section>
+
+<section id="s4" class="card" hidden>
+ <h2>Patient card · ರೋಗಿಯ ಚೀಟಿ</h2>
+ <div id="card"></div>
+ <p class="row"><button class="btn" id="speak">Read aloud in Kannada</button><button class="btn alt" id="reset">New patient</button></p>
+ <p class="muted" id="spinfo"></p>
+ <h2 style="margin-top:14px">SMS fallback</h2>
+ <div class="sms" id="sms"></div>
+ <p class="muted" id="bytes"></p>
+ <div class="note g" id="counter"></div>
+</section>
+<p class="muted">Decision-support aid, not a diagnosis. The doctor must confirm every prescription.</p>
+</div>
+
+<script>
+(function(){
+"use strict";
+var $=function(i){return document.getElementById(i)};
+var STEPS=["1 Triage","2 Call","3 Draft","4 Patient"];
+var SYM=[{id:"fever",en:"Fever",kn:"ಜ್ವರ",doc:"General doctor"},{id:"cough",en:"Cough",kn:"ಕೆಮ್ಮು",doc:"General doctor"},{id:"skin",en:"Skin problem",kn:"ಚರ್ಮದ ಸಮಸ್ಯೆ",doc:"Skin specialist"},{id:"child",en:"Child unwell",kn:"ಮಗುವಿಗೆ ಅನಾರೋಗ್ಯ",doc:"Child specialist"},{id:"chest",en:"Chest pain",kn:"ಎದೆ ನೋವು",doc:"Hospital now",urgent:1},{id:"breath",en:"Breathing trouble",kn:"ಉಸಿರಾಟದ ತೊಂದರೆ",doc:"Hospital now",urgent:1}];
+var MODES=[{id:"video",t:"Good network",s:"Video call",kbps:500,pct:100,ic:"📹"},{id:"audio",t:"Weak network",s:"Audio only",kbps:24,pct:30,ic:"🎙️"},{id:"chat",t:"Very weak",s:"Short chat",kbps:1,pct:8,ic:"💬"},{id:"off",t:"No network",s:"Save and send later",kbps:0,pct:0,ic:"📥"}];
+var DRUGS=[["paracetamol",1000],["azithromycin",500],["amoxicillin",1000],["cetirizine",10],["ibuprofen",800],["metformin",1000],["metronidazole",800],["pantoprazole",40],["omeprazole",40],["esomeprazole",40],["amlodipine",10],["amiodarone",400],["domperidone",10],["vitamin",0]];
+var S={sym:null,mode:"video",rx:[],tri:null,rec:null};
+var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+function show(n){["s1","s2","s3","s4"].forEach(function(id,i){$(id).hidden=(i+1!==n)});
+ Array.prototype.forEach.call($("nav").children,function(b,i){if(i+1===n)b.setAttribute("aria-current","step");else b.removeAttribute("aria-current")});window.scrollTo(0,0)}
+STEPS.forEach(function(t,i){var b=document.createElement("button");b.textContent=t;b.onclick=function(){show(i+1)};$("nav").appendChild(b)});
+
+/* Step 1 triage */
+SYM.forEach(function(s){var b=document.createElement("button");b.className="chip";b.setAttribute("aria-pressed","false");b.textContent=s.en+" · "+s.kn;
+ b.onclick=function(){S.sym=s;Array.prototype.forEach.call($("sym").children,function(c){c.setAttribute("aria-pressed","false")});b.setAttribute("aria-pressed","true")};$("sym").appendChild(b)});
+$("go1").onclick=function(){
+ if(!S.sym){$("tri").hidden=false;$("tri").innerHTML='<div class="note w">Tap a problem first.</div>';return}
+ var d=+$("days").value,u,msg;
+ if(S.sym.urgent){u="urgent";msg="Go to the nearest hospital now. Your case is at the top of the queue."}
+ else if(S.sym.id==="cough"&&d<3||S.sym.id==="fever"&&d<2){u="self";msg="Rest, drink water and watch for 2 more days. Consult if it gets worse."}
+ else{u="normal";msg="Queued for "+S.sym.doc+". Expected wait is short."}
+ S.tri={u:u,doc:S.sym.doc,sym:S.sym.en,days:d};
+ var lab={urgent:"Urgent · ತುರ್ತು",normal:"Normal · ಸಾಮಾನ್ಯ",self:"Self-care · ಮನೆಯಲ್ಲಿ ಆರೈಕೆ"}[u];
+ $("tri").hidden=false;
+ $("tri").innerHTML='<div class="note '+(u==="urgent"?"b":u==="self"?"g":"w")+'"><span class="pill '+u+'">'+lab+'</span><br><b>'+S.sym.doc+'</b><br>'+msg+'</div>'+(u==="self"?'':'<button class="btn" id="to2">Start consultation</button>');
+ if($("to2"))$("to2").onclick=function(){show(2)}};
+
+/* Step 2 adaptive call */
+function renderModes(){$("modes").innerHTML="";MODES.forEach(function(m){var b=document.createElement("button");b.className="mode";b.setAttribute("aria-pressed",String(S.mode===m.id));
+ b.innerHTML="<b>"+m.ic+" "+m.t+"</b><small>"+m.s+"</small>";b.onclick=function(){setMode(m.id)};$("modes").appendChild(b)})}
+function queue(){try{return JSON.parse(store.get("vp_q")||"[]")}catch(e){return[]}}
+function setMode(id){S.mode=id;var m=MODES.filter(function(x){return x.id===id})[0];renderModes();
+ $("stage").innerHTML="<b>"+m.ic+" "+m.s+"</b><span class=\"muted\">"+(m.kbps?"About "+m.kbps+" kbps used":"Nothing is sent. Messages wait on the phone.")+"</span><div class=\"meter\" aria-hidden=\"true\"><i style=\"width:"+m.pct+"%\"></i></div>";
+ if(id!=="off"){var q=queue();if(q.length){store.set("vp_q","[]");$("sent").innerHTML='<div class="note g">Network is back. Sent '+q.length+' saved message(s) to the doctor.</div>'}}
+ $("qinfo").textContent=queue().length?queue().length+" waiting to send":""}
+$("send").onclick=function(){var t=$("msg").value.trim();if(!t){$("sent").innerHTML='<div class="note w">Type a short message first.</div>';return}
+ if(S.mode==="off"){var q=queue();q.push({t:t,at:Date.now()});store.set("vp_q",JSON.stringify(q));$("sent").innerHTML='<div class="note w">No network. Saved on this phone and will send automatically when the network returns.</div>'}
+ else $("sent").innerHTML='<div class="note g">Sent to the doctor ('+new TextEncoder().encode(t).length+' bytes).</div>';
+ $("qinfo").textContent=queue().length?queue().length+" waiting to send":"";$("msg").value=""};
+$("go2").onclick=function(){show(3)};
+setMode("video");
+
+/* Step 3 extraction */
+function lev(a,b){var m=[],i,j;for(i=0;i<=a.length;i++){m[i]=[i]}for(j=0;j<=b.length;j++)m[0][j]=j;
+ for(i=1;i<=a.length;i++)for(j=1;j<=b.length;j++)m[i][j]=Math.min(m[i-1][j]+1,m[i][j-1]+1,m[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return m[a.length][b.length]}
+function sim(a,b){return 1-lev(a,b)/Math.max(a.length,b.length)}
+function findDrug(words){var best=null;words.forEach(function(w){if(w.length<5)return;DRUGS.forEach(function(d){var s=sim(w,d[0]);if(s>=.72&&(!best||s>best.s))best={n:d[0],max:d[1],s:s,heard:w}})});return best}
+function parse(text){var out=[];text.toLowerCase().split(/[.;\n]+/).forEach(function(sn){
+ var words=sn.match(/[a-z]+/g)||[];var d=findDrug(words);if(!d)return;
+ var dose=(sn.match(/(\d+(?:\.\d+)?)\s*(mg|ml)/)||[]);var t=[];
+ if(/morning/.test(sn))t.push("morning");if(/afternoon|noon/.test(sn))t.push("afternoon");if(/evening/.test(sn))t.push("evening");if(/night|bedtime/.test(sn))t.push("night");
+ if(!t.length){if(/three times|thrice|\b3 times/.test(sn))t=["morning","afternoon","night"];else if(/twice|two times|\b2 times/.test(sn))t=["morning","night"];else if(/once|one time/.test(sn))t=["morning"]}
+ var food=/after (food|meal)/.test(sn)?"after":/before (food|meal)/.test(sn)?"before":"";
+ var days=(sn.match(/for (\d+) days?/)||[])[1];
+ var warns=[];if(d.max&&dose[1]&&+dose[1]>d.max)warns.push("Dose "+dose[1]+" mg is above the usual single dose ("+d.max+" mg).");
+ DRUGS.forEach(function(o){if(o[0]!==d.n&&sim(o[0],d.n)>=.68)warns.push("Look-alike name: "+o[0]+". Check the strip.")});
+ if(d.s<.9)warns.push("Heard “"+d.heard+"”, matched to "+d.n+". Please check.");
+ out.push({name:d.n,dose:dose[1]?dose[1]+dose[2]:"",t:t,food:food,days:days||"",conf:d.s,warns:warns})});return out}
+
+$("sample").onclick=function(){$("tx").value="Hello, how are you feeling? Fever since three days. Take paracetamol 500 mg morning and night after food for 5 days. Also azithromycin 500 mg once a day before food for 3 days. Drink plenty of water and rest. Come back if the fever stays."};
+var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+$("mic").onclick=function(){
+ if(!SR){$("micinfo").textContent="Voice input is not available in this browser. Type or use the sample text. Chrome on Android supports it.";return}
+ if(S.rec){S.rec.stop();return}
+ var r=new SR();r.lang="en-IN";r.continuous=true;r.interimResults=false;var base=$("tx").value;
+ r.onresult=function(e){var s="";for(var i=0;i<e.results.length;i++)s+=e.results[i][0].transcript+". ";$("tx").value=(base+" "+s).trim()};
+ r.onend=function(){S.rec=null;$("mic").textContent="Start recording"};
+ r.onerror=function(){$("micinfo").textContent="Microphone problem. Allow mic access or type instead."};
+ r.start();S.rec=r;$("mic").textContent="Stop recording";$("micinfo").textContent="Listening. Audio is not saved by this app."};
+$("ext").onclick=function(){
+ if(S.rec)S.rec.stop();
+ var rx=parse($("tx").value);$("tx").value="";S.rx=rx;drawDraft()};
+function drawDraft(){var el=$("draft");el.hidden=false;
+ if(!S.rx.length){el.innerHTML='<div class="note w">No medicine found. Add text that names a medicine, dose and timing.</div>';return}
+ var h='<div class="note g">Conversation deleted. Only the medicine details below are kept.</div><table><tr><th>Medicine</th><th>Dose</th><th>When</th><th>Days</th></tr>';
+ S.rx.forEach(function(r,i){h+='<tr><td>'+(r.conf<.9?'<span class="low">'+r.name+'</span>':r.name)+'</td><td>'+(r.dose||'<span class="low">?</span>')+'</td><td>'+(r.t.length?r.t.join(", "):'<span class="low">?</span>')+(r.food?"<br>"+r.food+" food":"")+'</td><td>'+(r.days||'<span class="low">?</span>')+'</td></tr>';
+  r.warns.forEach(function(w){h+='<tr><td colspan="4"><div class="note '+(/above/.test(w)?"b":"w")+'">'+w+'</div></td></tr>'})});
+ h+='</table><p class="muted">Yellow means please check. Nothing is sent until you confirm.</p><button class="btn" id="conf">Confirm and send</button>';el.innerHTML=h;
+ $("conf").onclick=confirmRx}
+
+/* Step 4 patient card */
+var KT={morning:"ಬೆಳಿಗ್ಗೆ",afternoon:"ಮಧ್ಯಾಹ್ನ",evening:"ಸಂಜೆ",night:"ರಾತ್ರಿ"},IC={morning:"☀️",afternoon:"🌤️",evening:"🌆",night:"🌙"};
+function confirmRx(){
+ var h="",sms="VoicePrescribe Rx\n",kn="";
+ S.rx.forEach(function(r){var ic=r.t.map(function(x){return IC[x]}).join(" "),k=r.t.map(function(x){return KT[x]}).join(" · "),f=r.food==="after"?"ಊಟದ ನಂತರ":r.food==="before"?"ಊಟದ ಮೊದಲು":"";
+  h+='<div class="med"><div class="name">'+r.name.charAt(0).toUpperCase()+r.name.slice(1)+' '+r.dose+'</div><div class="icons">'+ic+'</div><div class="kn">'+k+(f?" · "+f:"")+(r.days?" · "+r.days+" ದಿನ":"")+'</div></div>';
+  sms+=r.name+" "+r.dose+" - "+r.t.join(",")+(r.food?" - "+r.food+" food":"")+(r.days?" - "+r.days+"d":"")+"\n";
+  kn+=r.name+" "+r.dose+". "+k+". "+f+". "+(r.days?r.days+" ದಿನ. ":"")});
+ $("card").innerHTML=h;$("sms").textContent=sms.trim();
+ $("bytes").textContent="Size: "+new TextEncoder().encode(sms).length+" bytes. Small enough for plain SMS.";
+ $("counter").textContent="Sent to the medical counter: "+S.rx.length+" medicine(s), typed and clear.";
+ S.kn=kn;store.set("vp_last",JSON.stringify(S.rx));show(4)}
+$("speak").onclick=function(){
+ if(!("speechSynthesis" in window)){$("spinfo").textContent="Read-aloud is not available on this device.";return}
+ var u=new SpeechSynthesisUtterance(S.kn);u.lang="kn-IN";var v=speechSynthesis.getVoices().filter(function(x){return /^kn/i.test(x.lang)});
+ $("spinfo").textContent=v.length?"Reading in Kannada.":"No Kannada voice installed on this device, so it may sound wrong. Install one in phone settings.";
+ speechSynthesis.cancel();speechSynthesis.speak(u)};
+$("reset").onclick=function(){S.sym=null;S.rx=[];S.tri=null;$("tri").hidden=true;$("draft").hidden=true;$("sent").innerHTML="";
+ Array.prototype.forEach.call($("sym").children,function(c){c.setAttribute("aria-pressed","false")});show(1)};
+show(1);
+})();
+</script>
+</body>
+</html>
